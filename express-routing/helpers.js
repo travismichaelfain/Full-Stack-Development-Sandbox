@@ -1,83 +1,66 @@
-/**
- * Build a frequency counter object from an array
- * @param {Array} arr any array
- */
-function createFrequencyCounter(arr) {
-  return arr.reduce(function (acc, next) {
-    acc[next] = (acc[next] || 0) + 1;
+import ExpressError from "./expressError.js";
+
+const createFrequencyCounter = (arr) => {
+  return arr.reduce((acc, item) => {
+    acc[item] = (acc[item] || 0) + 1;
     return acc;
   }, {});
-}
+};
 
-/**
- * Find the most common element in the array
- * @param {Array} arr any array
- */
-function findMode(arr) {
-  let freqCounter = createFrequencyCounter(arr);
+const convertAndValidateNumsArray = (numsAsStrings) => {
+  return numsAsStrings.map((numString, index) => {
+    const num = Number(numString);
 
-  let count = 0;
-  let mostFrequent;
-
-  for (let key in freqCounter) {
-    if (freqCounter[key] > count) {
-      mostFrequent = key;
-      count = freqCounter[key];
-    }
-  }
-
-  return +mostFrequent;
-}
-
-/**
- * Attempt to convert an array of strings to an array of numbers
- * @param {Array} numsAsStrings array of strings
- * @returns {Array|Error} an array or an error object
- */
-function convertAndValidateNumsArray(numsAsStrings) {
-  let result = [];
-
-  for (let i = 0; i < numsAsStrings.length; i++) {
-    let valToNumber = Number(numsAsStrings[i]);
-
-    if (Number.isNaN(valToNumber)) {
-      return new Error(
-        `The value '${numsAsStrings[i]}' at index ${i} is not a valid number.`,
+    if (Number.isNaN(num)) {
+      throw new ExpressError(
+        `The value '${numString}' at index ${index} is not a valid number.`,
+        400,
       );
     }
 
-    result.push(valToNumber);
-  }
-  return result;
-}
+    return num;
+  });
+};
 
-function findMean(nums) {
+const findMean = (nums) => {
   if (nums.length === 0) return 0;
-  return (
-    nums.reduce(function (acc, cur) {
-      return acc + cur;
-    }) / nums.length
-  );
-}
 
-function findMedian(nums) {
-  nums.sort((a, b) => a - b);
+  const total = nums.reduce((sum, num) => sum + num, 0);
 
-  let middleIndex = Math.floor(nums.length / 2);
-  let median;
+  return total / nums.length;
+};
 
-  if (nums.length % 2 === 0) {
-    median = (nums[middleIndex] + nums[middleIndex - 1]) / 2;
-  } else {
-    median = nums[middleIndex];
+const findMedian = (nums) => {
+  const sortedNums = [...nums].sort((a, b) => a - b);
+  const middleIndex = Math.floor(sortedNums.length / 2);
+
+  if (sortedNums.length % 2 === 0) {
+    return (sortedNums[middleIndex] + sortedNums[middleIndex - 1]) / 2;
   }
-  return median;
-}
 
-module.exports = {
+  return sortedNums[middleIndex];
+};
+
+const findMode = (nums) => {
+  const frequencyCounter = createFrequencyCounter(nums);
+
+  let highestCount = 0;
+  let mostFrequent;
+
+  for (const key in frequencyCounter) {
+    if (frequencyCounter[key] > highestCount) {
+      highestCount = frequencyCounter[key];
+      mostFrequent = key;
+    }
+  }
+
+  return Number(mostFrequent);
+};
+
+export {
   createFrequencyCounter,
+  convertAndValidateNumsArray,
   findMean,
   findMedian,
   findMode,
-  convertAndValidateNumsArray,
 };
