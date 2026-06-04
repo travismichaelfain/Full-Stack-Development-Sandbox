@@ -2,8 +2,6 @@ const fs = require("fs");
 const process = require("process");
 const axios = require("axios");
 
-/** read file at path and print it out. */
-
 function cat(path) {
   fs.readFile(path, "utf8", function (err, data) {
     if (err) {
@@ -14,8 +12,6 @@ function cat(path) {
     }
   });
 }
-
-/** read page at URL and print it out. */
 
 async function webCat(url) {
   try {
